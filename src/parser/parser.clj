@@ -1,8 +1,10 @@
 (ns parser.parser)
 (require '[clojure.string :as str])
 
-(defprotocol Executable
-  (exec [this])
+(defrecord State [rules])
+
+(defn inner-str [s begin end]
+    (clojure.string/replace (clojure.string/replace s begin "") end "")
 )
 
 (defn parsecounterargs [c]
@@ -13,12 +15,8 @@
     (filter #(not= % (nth s 0) s)) ;TODO:parse data + condition and return expression.
 )
 
-(defn inner-str [s begin end]
-    (clojure.string/replace (clojure.string/replace s begin "") end "")
-)
-
 (defn parserule [r]
-    (def exp (str/split (inner-str (str r) "(" ")") #" "))
+    (def exp (str/split (inner-str r "(" ")") #" "))
     {:type (nth exp 0) :args  (filter #(not= % (nth exp 0)) exp)}
 )
 
@@ -28,7 +26,9 @@
 
 (defmethod ruleparser "define-signal"  [exp] {:signals,{(nth (:args exp) 0) (parsesingalargs (:args exp))}})
 
-(defrecord State [rules])
+(defprotocol Executable
+  (exec [this])
+)
 
 (defrecord Parser [rules]
     Executable
