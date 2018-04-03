@@ -5,21 +5,36 @@
   (exec [this])
 )
 
-(defn parserule [r]
-    (first (str/split (str r) #" "))
+(defn parsecounterargs [c]
+    (filter #(not= % (nth c 0) c)) ;TODO:parse arguments + condition and return expression.
 )
 
+(defn parsesingalargs [s]
+    (filter #(not= % (nth s 0) s)) ;TODO:parse data + condition and return expression.
+)
 
-(defmulti ruleparser (fn [exp] exp))
+(defn inner-str [s begin end]
+    (clojure.string/replace (clojure.string/replace s begin "") end "")
+)
 
-(defmethod ruleparser "(define-counter" [exp] "Is counter" )
+(defn parserule [r]
+    (def exp (str/split (inner-str (str r) "(" ")") #" "))
+    {:type (nth exp 0) :args  (filter #(not= % (nth exp 0)) exp)}
+)
 
-(defmethod ruleparser "(define-signal" [exp] "Is signal" )
+(defmulti ruleparser (fn [exp] (:type exp) ))
 
+(defmethod ruleparser "define-counter"  [exp] {:counters, {(nth (:args exp) 0) (parsecounterargs (:args exp)) } } )
+
+(defmethod ruleparser "define-signal"  [exp] {:signals,{(nth (:args exp) 0) (parsesingalargs (:args exp))}})
+
+(defrecord State [rules])
 
 (defrecord Parser [rules]
     Executable
     (exec [this]
-      (for [r (:rules this) :let [y (parserule r)] ] (ruleparser y))
+      (new State
+        (apply merge-with (comp merge) (map ruleparser (map parserule (:rules this))) )
+      )
     )
 )
