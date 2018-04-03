@@ -3,12 +3,12 @@
 
 (defrecord State [rules])
 
-(defn inner-str [s begin end]
-    (clojure.string/replace (clojure.string/replace s begin "") end "")
+(defn inner-str [s]
+    (subs s 1 (- (count s) 1 ))
 )
 
 (defn parsecounterargs [c]
-    (filter #(not= % (nth c 0) c)) ;TODO:parse arguments + condition and return expression.
+    (clojure.string/replace (clojure.string/join #" " c) (nth c 0) "") ;TODO:parse arguments + condition and return expression.
 )
 
 (defn parsesingalargs [s]
@@ -16,7 +16,7 @@
 )
 
 (defn parserule [r]
-    (def exp (str/split (inner-str r "(" ")") #" "))
+    (def exp (str/split (inner-str (str r) ) #" "))
     {:type (nth exp 0) :args  (filter #(not= % (nth exp 0)) exp)}
 )
 
@@ -30,6 +30,7 @@
   (exec [this])
 )
 
+;TODO:must validate rule string format.
 (defrecord Parser [rules]
     Executable
     (exec [this]
