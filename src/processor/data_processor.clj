@@ -1,6 +1,8 @@
 (ns processor.data-processor
   (:require [processor.processor])
   (:import [processor.processor Processor])
+  (:require [interfaces.interfaces])
+  (:import [interfaces.interfaces Evaluable])
 )
 
 
@@ -21,5 +23,8 @@
   [nil []])
 
 (defn query-counter [state counter-name counter-args]
-  0
+  (if (contains? (:counters (:rules state)) counter-name)
+    (interfaces.interfaces/eval (get (:counters (:rules state)) counter-name) counter-args)
+    0
+  )
 )

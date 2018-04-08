@@ -6,7 +6,7 @@
 
 (defrecord Counter [count_rule]
   Evaluable
-  (eval [this data]
-    ;(if (:fcond ))
+  (eval [this args]
+    (get (:values this) args 0)
   )
 )

@@ -13,8 +13,10 @@
                                                      (current "important")]
                true)))
 
+;State <-- { :counters {"email-count"  {:fcond fn :fargs fn values {"[]" 0} }}}
+
+
 (deftest initial-state-test
-    (testing
-      (is (= '("Is counter", "Is counter", "Is signal", "Is counter")  (initialize-processor rules) ))
-    )
-)
+  (testing "Query counter from initial state"
+    (is (= 0
+           (query-counter (initialize-processor rules) "email-count" [])))))
