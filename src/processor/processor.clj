@@ -1,6 +1,8 @@
 (ns processor.processor
   (:require [parser.parser])
+  (:require [interfaces.interfaces])
   (:import [parser.parser Parser])
+  (:import [interfaces.interfaces Executable])
 )
 
 (defprotocol Initializable
@@ -10,6 +12,6 @@
 (defrecord Processor [rules]
     Initializable
     (init [this]
-         (parser.parser/exec (Parser. rules))
+         (interfaces.interfaces/exec (Parser. rules))
     )
 )

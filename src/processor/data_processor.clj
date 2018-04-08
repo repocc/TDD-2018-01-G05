@@ -21,4 +21,5 @@
   [nil []])
 
 (defn query-counter [state counter-name counter-args]
-  0)
+  0
+)
