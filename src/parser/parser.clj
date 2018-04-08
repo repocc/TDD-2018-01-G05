@@ -1,15 +1,22 @@
-(ns parser.parser)
+(ns parser.parser
+  (:require [expressions.expression])
+  (:import [expressions.expression Expression])
+)
 (require '[clojure.string :as str])
 
 (defrecord State [rules])
 
-(defn parsecounterargs [c]
-    {:name (nth (re-find #"(\".*?\")" c) 0) :args (nth (re-find #"(?<=\[)(.*?)(?=\])" c) 0)}
+(defn parsecounterargs [cexp]
+    (def cname (nth (re-find #"(\".*?\")" (:arg cexp)) 0) ) ;gets the counter name.
+    ;(def arg (nth (re-find #"(?<=\[)(.*?)(?=\])" (:arg cexp)) 0) ) ;gets the counter parameter list (This one removes the [])
+    (def arg (nth (re-find #"(\[.*?\])" (:arg cexp)) 0)) ;gets the counter parameter list.
+    (def eval_exp (clojure.string/replace (clojure.string/replace (clojure.string/replace (:arg cexp) cname "") (:type cexp) "" ) arg ""))
+    {:name cname :args arg :func (new Expression eval_exp)}
 )
 
-(defn parsesingalargs [s]
-    (def sname (nth (re-find #"(\".*?\")" s) 0) )
-    {:name sname :args (nth (re-find #"(?<=\{)(.*?)(?=\})" (clojure.string/replace s sname "")) 0)}
+(defn parsesingalargs [sexp]
+    (def sname (nth (re-find #"(\".*?\")" (:arg sexp)) 0) )
+    {:name sname :args (nth (re-find #"(?<=\{)(.*?)(?=\})" (clojure.string/replace (:arg sexp) sname "")) 0)}
 )
 
 (defn parserule [r]
@@ -18,9 +25,10 @@
 
 (defmulti ruleparser (fn [exp] (:type exp) ))
 
-(defmethod ruleparser "(define-counter "  [exp] {:counters, {(:name (parsecounterargs (:arg exp))) (:args (parsecounterargs (:arg exp)))  } } )
+(defmethod ruleparser "(define-counter "  [exp] {:counters, {(:name (parsecounterargs exp)) {(:args (parsecounterargs exp)) (:func (parsecounterargs exp))}  } } )
 
-(defmethod ruleparser "(define-signal "  [exp] {:signals {(:name (parsesingalargs (:arg exp))) (:args (parsesingalargs (:arg exp)) ) } } )
+;TODO: define signal expressions:
+(defmethod ruleparser "(define-signal "  [exp] {:signals {(:name (parsesingalargs exp)) (:args (parsesingalargs exp)) } } )
 
 (defprotocol Executable
   (exec [this])

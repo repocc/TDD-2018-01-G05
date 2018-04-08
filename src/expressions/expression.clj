@@ -1,8 +1,10 @@
 (ns expressions.expression)
 
-(defmulti calc_result (fn [exp data] (type exp)))
+(defn matchs [s] (into [] (map #(re-find % s) [#"true" #"false"])))
 
-(defmethod calc_result java.lang.Boolean [exp data] exp)
+(defmulti calc_result (fn [exp data] (matchs exp)) )
+
+(defmethod calc_result  ["true" :default] [exp data] true)
 
 (defprotocol Evaluable
     (evaluate [this data])
@@ -13,5 +15,4 @@
     (evaluate [this data]
         (calc_result e data)
     )
-
 )
