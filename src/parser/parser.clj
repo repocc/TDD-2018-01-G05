@@ -8,8 +8,8 @@
 )
 
 (defn parsesingalargs [s]
-    ;(filter #(not= % (nth s 0) s)) ;TODO:parse data + condition and return expression.
-    s
+    (def sname (nth (re-find #"(\".*?\")" s) 0) )
+    {:name sname :args (nth (re-find #"(?<=\{)(.*?)(?=\})" (clojure.string/replace s sname "")) 0)}
 )
 
 (defn parserule [r]
@@ -20,7 +20,7 @@
 
 (defmethod ruleparser "(define-counter "  [exp] {:counters, {(:name (parsecounterargs (:arg exp))) (:args (parsecounterargs (:arg exp)))  } } )
 
-(defmethod ruleparser "(define-signal "  [exp] {:signals (parsesingalargs (:arg exp))} )
+(defmethod ruleparser "(define-signal "  [exp] {:signals {(:name (parsesingalargs (:arg exp))) (:args (parsesingalargs (:arg exp)) ) } } )
 
 (defprotocol Executable
   (exec [this])
