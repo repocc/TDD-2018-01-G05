@@ -3,28 +3,24 @@
 
 (defrecord State [rules])
 
-(defn inner-str [s]
-    (subs s 1 (- (count s) 1 ))
-)
-
 (defn parsecounterargs [c]
-    (clojure.string/replace (clojure.string/join #" " c) (nth c 0) "") ;TODO:parse arguments + condition and return expression.
+    {:name (nth (re-find #"(\".*?\")" c) 0) :args (nth (re-find #"(?<=\[)(.*?)(?=\])" c) 0)}
 )
 
 (defn parsesingalargs [s]
-    (filter #(not= % (nth s 0) s)) ;TODO:parse data + condition and return expression.
+    ;(filter #(not= % (nth s 0) s)) ;TODO:parse data + condition and return expression.
+    s
 )
 
 (defn parserule [r]
-    (def exp (str/split (inner-str (str r) ) #" "))
-    {:type (nth exp 0) :args  (filter #(not= % (nth exp 0)) exp)}
+    {:type (nth (re-find #"(\(define-.*?\ )" (str r)) 0)  :arg (str r)}
 )
 
 (defmulti ruleparser (fn [exp] (:type exp) ))
 
-(defmethod ruleparser "define-counter"  [exp] {:counters, {(nth (:args exp) 0) (parsecounterargs (:args exp)) } } )
+(defmethod ruleparser "(define-counter "  [exp] {:counters, {(:name (parsecounterargs (:arg exp))) (:args (parsecounterargs (:arg exp)))  } } )
 
-(defmethod ruleparser "define-signal"  [exp] {:signals,{(nth (:args exp) 0) (parsesingalargs (:args exp))}})
+(defmethod ruleparser "(define-signal "  [exp] {:signals (parsesingalargs (:arg exp))} )
 
 (defprotocol Executable
   (exec [this])

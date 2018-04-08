@@ -5,12 +5,12 @@
 (defmethod calc_result java.lang.Boolean [exp data] exp)
 
 (defprotocol Evaluable
-    (evaluateexp [this data])
+    (evaluate [this data])
 )
 
 (defrecord Expression [e]
     Evaluable
-    (evaluateexp [this data]
+    (evaluate [this data]
         (calc_result e data)
     )
 
