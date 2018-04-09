@@ -4,23 +4,24 @@
   (:import [interfaces.interfaces Updateable])
 )
 
-(defn matchs [s] (into [] (map #(re-find % s) [#"true" #"false"])))
+(defmulti calc_result (fn [exp data] exp) )
 
-(defmulti calc_result (fn [exp data] (matchs exp)) )
+(defmethod calc_result  "true" [exp data] true)
+(defmethod calc_result  "false" [exp data] false)
+(defmethod calc_result  :default [exp data] exp)
 
-(defmethod calc_result  ["true" :default] [exp data] true)
-
-(defrecord Expression [e];Represent literals: Numbers, Booleans or strings.
+(defrecord Expression [e]
+    ;Represents a literal: Numbers, Booleans or strings.
     Evaluable
     (evaluate [this data]
-        (calc_result e data);TODO: Evaluate ALL literals.
+        (calc_result e data)
     )
 )
 
 (defrecord Function [operator args];Represent functions such as: "\", "not", "+", "current", "past"...
   Evaluable
   (evaluate [this data]
-    false;TODO: Evaluate expressions and apply operator
+    true;TODO: Evaluate expressions and apply operator
   )
 )
 

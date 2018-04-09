@@ -22,12 +22,10 @@
   and the second element is the processed data."
   [state new-data]
   [
-    ;(reduce-kv #(interfaces.interfaces/updateexp state  %2 %3) state new-data)
-    (interfaces.interfaces/updateexp state "spam" "true")
+    (reduce-kv #(interfaces.interfaces/updateexp state  %2 %3) state new-data)
     []
   ]
 )
-  ;[nil []])
 
 (defn query-counter [state counter-name counter-args]
   (if (contains? (:counters (:rules state)) counter-name)

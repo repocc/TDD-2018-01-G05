@@ -11,29 +11,30 @@
 )
 (require '[clojure.string :as str])
 
-
-
 (defn parse-expression-list [exp-list]
   ;Returns a vector with the parameter expressions.
   (if (empty? (first exp-list))
     (into [] nil)
 
-    (if (str/ends-with? (nth exp-list 0) ")")
-        (into [] (new Expression (str/replace (nth exp-list 0) ")" "")))
-        (if (str/starts-with? (nth exp-list 0) "(")
-          (into [] (new Function (subs (nth exp-list 0) 1) (parse-expression-list (pop exp-list)))) ;build function receives operator + expression list
-          (into [] (concat (into [] (new Expression (nth exp-list 0))) (parse-expression-list (pop exp-list)) ))
+    (if (str/ends-with? (first exp-list) ")")
+        [(new Expression (str/replace (nth exp-list 0) ")" "")) ]
+        (if (str/starts-with? (first exp-list) "(")
+          [ (new Function (subs (first exp-list) 1) (concat (parse-expression-list (drop 1 exp-list)))
+                 )];build function receives operator + expression list
+          (concat [(new Expression (first exp-list))] (parse-expression-list (drop 1 exp-list)))
         )
     )
   )
 )
 
 (defn parsecounterargs [cexp]
+    (def params  (nth (re-find #"(\[)(.*?)\]" (:arg cexp)) 0)) ;gets the counter parameter list.
     (def cname (str/replace (nth (re-find #"(\".*?\")" (:arg cexp)) 0) "\"" "")) ;gets the counter name.
-    (def param_exp (str/split (nth (re-find #"(?<=\[)(.*?)(?=\])" (:arg cexp)) 0) #" ") ) ;gets the counter parameter list.
-    ;(def eval_exp (str/replace (str/replace (str/replace (:arg cexp) cname "") (:type cexp) "") param_exp "") )
+    (def param_exp (str/split (str/replace (str/replace params "[" "") "]" "") #" ") ) ;removes '[]' from counter parameter list. Splits arguments.
+    (def eval_exp (str/replace (str/replace (str/replace (:arg cexp) cname "") (:type cexp) "") params "") ) ;gets condition.
 
-    (defn expression_evaluator [data-name data-value] true) ;TODO: parse eval_exp to generate evaluable expression.
+    ;(defn expression_evaluator [data-name data-value] true) ;TODO: parse eval_exp to generate evaluable expression.
+    (defn expression_evaluator [data-name data-value] (interfaces.interfaces/evaluate (first (parse-expression-list [eval_exp])) {data-name data-value} ))
 
     {:name cname :rule {:fcond expression_evaluator :fargs (parse-expression-list param_exp) :values {} } }
 

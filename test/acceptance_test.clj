@@ -19,7 +19,7 @@
 
 (deftest initial-state-test
   (testing "Query counter from initial state"
-    (is (= 0
+    (is (= 0 ;(initialize-processor rules)))))
            (query-counter (initialize-processor rules) "spam" [])))))
 
 ;(deftest unconditional-counter-test
