@@ -3,6 +3,7 @@
   (:import [processor.processor Processor])
   (:require [interfaces.interfaces])
   (:import [interfaces.interfaces Evaluable])
+  (:import [interfaces.interfaces Initializable])
 )
 
 
@@ -10,7 +11,7 @@
       "Receives a set of rules.
       Returns a state s0."
       [rules]
-      (processor.processor/init
+      (interfaces.interfaces/init
         (new Processor rules)
       )
 )
@@ -24,7 +25,7 @@
 
 (defn query-counter [state counter-name counter-args]
   (if (contains? (:counters (:rules state)) counter-name)
-    (interfaces.interfaces/eval (get (:counters (:rules state)) counter-name) counter-args)
+    (interfaces.interfaces/eval (get (:counters (:rules state)) counter-name) counter-args) ;TODO: move this.
     0
   )
 )

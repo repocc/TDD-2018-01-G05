@@ -3,10 +3,7 @@
   (:require [interfaces.interfaces])
   (:import [parser.parser Parser])
   (:import [interfaces.interfaces Executable])
-)
-
-(defprotocol Initializable
-    (init [this])
+  (:import [interfaces.interfaces Initializable])
 )
 
 (defrecord Processor [rules]

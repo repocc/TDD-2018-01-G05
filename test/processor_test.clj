@@ -5,13 +5,13 @@
 (def rules '((define-counter "email-count" []
                true)
              (define-counter "spam-count" []
-               (current "spam"))
-             (define-signal {"spam-fraction" (/ (counter-value "spam-count" [])
-                                                (counter-value "email-count" []))}
-               true)
-             (define-counter "spam-important-table" [(current "spam")
-                                                     (current "important")]
-               true)))
+               (current "spam"))))
+             ;(define-signal {"spam-fraction" (/ (counter-value "spam-count" [])
+            ;                                    (counter-value "email-count" []))}
+            ;   true)
+            ; (define-counter "spam-important-table" [(current "spam")
+            ;                                         (current "important")]
+            ;   true)))
 
 ;State <-- { :counters {"email-count"  {:fcond fn :fargs fn values {"[]" 0} }}}
 

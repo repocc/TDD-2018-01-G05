@@ -8,6 +8,11 @@
     (eval [this data])
 )
 
+(defprotocol Initializable
+    (init [this])
+)
+
+
 ;(defprotocol Updateable
 ;    (updateexp [this countName])
 ;)
