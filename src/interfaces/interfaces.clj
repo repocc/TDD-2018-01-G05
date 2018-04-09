@@ -5,14 +5,13 @@
 )
 
 (defprotocol Evaluable
-    (eval [this data])
+    (evaluate [this data])
 )
 
 (defprotocol Initializable
     (init [this])
 )
 
-
-;(defprotocol Updateable
-;    (updateexp [this countName])
-;)
+(defprotocol Updateable
+    (updateexp [this data-name data-value])
+)
