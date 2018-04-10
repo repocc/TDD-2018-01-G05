@@ -23,11 +23,11 @@
         (println "-")
         (function-evaluator (rest exp) data sub)
      )
- ;,
-;   (symbol 'current)
- ;  (fn [exp data]
-  ;     (function-evaluator (data (first exp)) data)
-  ; )
+   (symbol 'current)
+   (fn [exp data]
+      ;(println (str "current" " " data (rest exp)))
+      (data (first (rest exp)))
+   )
   }
 )
 
@@ -62,6 +62,7 @@
 
 (defn sum [x y data] (+ x (function-evaluator y data sum)))
 (defn sub [x y data] (- x (function-evaluator y data sum)))
+
 
 ;CASOS TESTEADOS:
 ;(function-evaluator '(- 10 1) {} nil)
