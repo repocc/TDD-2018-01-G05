@@ -1,7 +1,7 @@
 (ns processor.expressions)
-
 (require '[clojure.string :as str])
 
+(declare functions)
 
 (defn eval-lit [lit restofexp data f]
   (println (str lit " " restofexp))
@@ -10,27 +10,6 @@
       (f lit restofexp data)
   )
 )
-
-(def functions
-  {
-   (symbol '+)
-   (fn [exp data]
-     (println "+")
-     (function-evaluator (rest exp) data sum)
-   )
-   (symbol '-)
-     (fn [exp data]
-        (println "-")
-        (function-evaluator (rest exp) data sub)
-     )
-   (symbol 'current)
-   (fn [exp data]
-      ;(println (str "current" " " data (rest exp)))
-      (data (first (rest exp)))
-   )
-  }
-)
-
 
 (defmulti function-evaluator (fn [exp data f]
                                  (type (first exp))))
@@ -63,6 +42,25 @@
 (defn sum [x y data] (+ x (function-evaluator y data sum)))
 (defn sub [x y data] (- x (function-evaluator y data sum)))
 
+(def functions
+  {
+   (symbol '+)
+   (fn [exp data]
+     (println "+")
+     (function-evaluator (rest exp) data sum)
+   )
+   (symbol '-)
+     (fn [exp data]
+        (println "-")
+        (function-evaluator (rest exp) data sub)
+     )
+   (symbol 'current)
+   (fn [exp data]
+      ;(println (str "current" " " data (rest exp)))
+      (data (first (rest exp)))
+   )
+  }
+)
 
 ;CASOS TESTEADOS:
 ;(function-evaluator '(- 10 1) {} nil)
