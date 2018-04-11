@@ -7,3 +7,7 @@
 (defprotocol Countable
   (count [this counter-name counter-args])
 )
+
+(defprotocol Initialize
+  (initialize [this])
+)

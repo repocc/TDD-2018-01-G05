@@ -3,38 +3,60 @@
   (:require [protocols.protocols])
   (:import [protocols.protocols Countable])
   (:import [protocols.protocols Evaluable])
-
 )
 
-(defmulti rule-matcher (fn [rule_type rule data] (symbol rule_type)))
-
-(defmethod rule-matcher 'define-counter [rule_type rule data]
-  (def cname (first rule))
-  (drop 1 rule) ;drop counter name
-  (if (function-evaluator (rest rule))
-    {(map #(function-evaluator % data) (first rule)) 1} ;evaluate parameter list
-    {}
+(defn evaluate-counter [rule data counters]
+  (def rule-exp (:counter-rule rule))
+  (def cname (first rule-exp))
+  (def params-cond (rest rule-exp))
+  ;(println (str "name " cname " rest rule " params-cond))
+  (if (function-evaluator (rest params-cond) data nil)
+       { cname
+              {
+                (into [] (map #(function-evaluator % data nil) (first params-cond)))  ;evaluate parameter list
+                (if (contains? counters cname)
+                  (inc (get (counters cname) (into [] (map #(function-evaluator % data nil) (first params-cond))) 0))   ;increment counter at parameter value by 1.
+                  1                                       ;initialize parameter counter.
+                )
+              }
+        }
+        {}
   )
 )
 
-(defmethod rule-matcher 'define-signal [rule_type rule data]
-  {}
+(defn evaluate-signal [rule data]
+  ;TODO: evaluate signals
 )
 
-(defn eval-rule [rule data]
-  (rule-matcher (first rule) (rest rule))
-)
-
-(defrecord State[rules counters]
+(defrecord State[rules counters history]
   Evaluable
   (evaluate [this data]
-    (map #(eval-rule % data) (:rules this)) ;TODO: armar nuevo mapa de contadores y estados con reduce y devolver new State.
+    (new State
+     (:rules this)
+     (into {} (map (fn [rule] (evaluate-counter rule data (:counters this))) (filter #(contains? % :counter-rule) (:rules this) ) ))
+     (:history this)
+    )
   )
   Countable
   (count [this counter-name counter-args]
-    (if (contains? (:count (:counters this)) counter-name)
+    (if (nil? (get (:counters this) counter-name))
       0
-      (get ((:count (:counters this)) counter-name) counter-args 0)
+      (get ((:counters this) counter-name) counter-args 0)
     )
   )
+)
+
+
+(defmulti rule-matcher (fn [rule_type rule] (symbol rule_type)))
+
+(defmethod rule-matcher 'define-counter [rule_type rule]
+  {:counter-rule (rest rule)}
+)
+
+(defmethod rule-matcher 'define-signal [rule_type rule]
+  {:signal-rule (rest rule)}
+)
+
+(defn get-init-state [rules]
+  (new State (map #(rule-matcher (first %)  %) rules) {} {})
 )

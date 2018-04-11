@@ -21,12 +21,12 @@
     (is (= 0
            (query-counter (initialize-processor rules) "spam" [])))))
 
-;(deftest unconditional-counter-test
-;  (let [st0 (initialize-processor rules)
-;        st1 (process-data-dropping-signals st0 {"spam" true})
-;        st2 (process-data-dropping-signals st1 {"spam" true})]
-;    (is (= 2
-;           (query-counter st2 "email-count" [])))))
+(deftest unconditional-counter-test
+  (let [st0 (initialize-processor rules)
+        st1 (process-data-dropping-signals st0 {"spam" true})
+        st2 (process-data-dropping-signals st1 {"spam" true})]
+    (is (= 2
+           (query-counter st2 "email-count" [])))))
 
 ;(deftest conditional-counter-test
 ;  (testing "Count incoming data by current condition"

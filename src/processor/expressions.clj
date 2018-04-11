@@ -2,9 +2,9 @@
 (require '[clojure.string :as str])
 
 (declare functions)
+(declare function-evaluator)
 
 (defn eval-lit [lit restofexp data f]
-  (println (str lit " " restofexp))
   (if (empty? restofexp)
       lit
       (f lit restofexp data)
@@ -15,7 +15,7 @@
                                  (type (first exp))))
 
 (defmethod function-evaluator java.lang.String [exp data f]
-           eval-lit(first(exp) rest(exp) data f)
+    (eval-lit (first exp) (rest exp) data f)
 )
 
 (defmethod function-evaluator java.lang.Number [exp data f]
@@ -27,11 +27,10 @@
 )
 
 (defmethod function-evaluator clojure.lang.Symbol [exp data f]
-      ((functions (first exp)) exp data)
+    ((functions (first exp)) exp data)
 )
 
 (defmethod function-evaluator :default [exp data f]
-    (println (str "list " exp))
     (if (empty? (rest exp))
       (function-evaluator (first exp) data f)
       (f (function-evaluator (first exp) data nil)
