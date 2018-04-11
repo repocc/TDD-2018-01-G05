@@ -45,17 +45,15 @@
   {
    (symbol '+)
    (fn [exp data]
-     (println "+")
      (function-evaluator (rest exp) data sum)
    )
    (symbol '-)
      (fn [exp data]
-        (println "-")
         (function-evaluator (rest exp) data sub)
      )
    (symbol 'current)
    (fn [exp data]
-      ;(println (str "current" " " data (rest exp)))
+;      (println (str "current" " " data (rest exp) (data (first (rest exp))) ))
       (data (first (rest exp)))
    )
   }

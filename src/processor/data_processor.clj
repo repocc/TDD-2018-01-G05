@@ -14,6 +14,5 @@
 )
 
 (defn query-counter [state counter-name counter-args]
-  ;(println (str "state at count " state))
   (protocols.protocols/count state counter-name counter-args)
 )

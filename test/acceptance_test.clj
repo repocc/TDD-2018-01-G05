@@ -2,16 +2,18 @@
   (:require [clojure.test :refer :all]
             [processor.data-processor :refer :all]))
 
-(def rules '((define-counter "email-count" []
+(def rules '(
+  (define-counter "email-count" []
                true)
              (define-counter "spam-count" []
                (current "spam"))
-;             (define-signal {"spam-fraction" (/ (counter-value "spam-count" [])
-;                                                (counter-value "email-count" []))}
-;               true)
+             (define-signal {"spam-fraction" (/ (counter-value "spam-count" [])
+                                                (counter-value "email-count" []))}
+               true)
              (define-counter "spam-important-table" [(current "spam")
                                                      (current "important")]
-               true)))
+               true)
+))
 
 (defn process-data-dropping-signals [state new-data]
   (first (process-data state new-data)))
@@ -28,30 +30,30 @@
     (is (= 2
            (query-counter st2 "email-count" [])))))
 
-;(deftest conditional-counter-test
-;  (testing "Count incoming data by current condition"
-;    (testing "when repeated"
-;      (let [st0 (initialize-processor rules)
-;            st1 (process-data-dropping-signals st0 {"spam" true})
-;            st2 (process-data-dropping-signals st1 {"spam" true})
-;            st3 (process-data-dropping-signals st2 {"spam" true})]
-;        (is (= 3
-;               (query-counter st3 "spam-count" [])))))
-;    (testing "when ignored field varies"
-;      (let [st0 (initialize-processor rules)
-;            st1 (process-data-dropping-signals st0 {"spam" true, "noise" 1})
-;            st2 (process-data-dropping-signals st1 {"spam" true, "noise" 2})
-;            st3 (process-data-dropping-signals st2 {"spam" true, "noise" 3})]
-;        (is (= 3
-;               (query-counter st3 "spam-count" [])))))
-;    (testing "when considered field varies"
-;      (let [st0 (initialize-processor rules)
-;            st1 (process-data-dropping-signals st0 {"spam" true})
-;            st2 (process-data-dropping-signals st1 {"spam" false})
-;            st3 (process-data-dropping-signals st2 {"spam" true})]
-;        (is (= 2
-;               (query-counter st3 "spam-count" [])))))))
-;
+(deftest conditional-counter-test
+  (testing "Count incoming data by current condition"
+    (testing "when repeated"
+      (let [st0 (initialize-processor rules)
+            st1 (process-data-dropping-signals st0 {"spam" true})
+            st2 (process-data-dropping-signals st1 {"spam" true})
+            st3 (process-data-dropping-signals st2 {"spam" true})]
+        (is (= 3
+               (query-counter st3 "spam-count" [])))))
+    (testing "when ignored field varies"
+      (let [st0 (initialize-processor rules)
+            st1 (process-data-dropping-signals st0 {"spam" true, "noise" 1})
+            st2 (process-data-dropping-signals st1 {"spam" true, "noise" 2})
+            st3 (process-data-dropping-signals st2 {"spam" true, "noise" 3})]
+        (is (= 3
+               (query-counter st3 "spam-count" [])))))
+    (testing "when considered field varies"
+      (let [st0 (initialize-processor rules)
+            st1 (process-data-dropping-signals st0 {"spam" true})
+            st2 (process-data-dropping-signals st1 {"spam" false})
+            st3 (process-data-dropping-signals st2 {"spam" true})]
+        (is (= 2
+               (query-counter st3 "spam-count" [])))))))
+
 ;(deftest contingency-table-counter-test
   ;(let [st0 (initialize-processor rules)
 ;        st1 (process-data-dropping-signals st0 {"spam" true, "important" true})

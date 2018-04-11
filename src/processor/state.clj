@@ -9,18 +9,20 @@
   (def rule-exp (:counter-rule rule))
   (def cname (first rule-exp))
   (def params-cond (rest rule-exp))
-  ;(println (str "name " cname " rest rule " params-cond))
   (if (function-evaluator (rest params-cond) data nil)
        { cname
               {
                 (into [] (map #(function-evaluator % data nil) (first params-cond)))  ;evaluate parameter list
-                (if (contains? counters cname)
-                  (inc (get (counters cname) (into [] (map #(function-evaluator % data nil) (first params-cond))) 0))   ;increment counter at parameter value by 1.
-                  1                                       ;initialize parameter counter.
+                (inc
+                  (if (nil? (counters (str cname)))
+                    0                                                                                             ;initialize parameter counter.
+                    (get (counters cname) (into [] (map #(function-evaluator % data nil) (first params-cond))) 0) ;get old counter value
+                  )
                 )
               }
         }
-        {}
+
+      counters
   )
 )
 
