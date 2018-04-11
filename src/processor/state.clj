@@ -7,18 +7,18 @@
 
 (defn evaluate-counter [rule data counters]
   (def rule-exp (:counter-rule rule))
-  (def cname (first rule-exp))
+  (def counter-name (first rule-exp))
   (def params-cond (rest rule-exp))
-  (if (function-evaluator (rest params-cond) data nil)
-       { cname
+  (if (function-evaluator (rest params-cond) data counters nil)
+       { counter-name
          (merge
-              (if (nil? (counters cname)) {} (counters cname))
+              (if (nil? (counters counter-name)) {} (counters counter-name))
               {
-                (into [] (map #(function-evaluator % data nil) (first params-cond)))  ;evaluate parameter list
+                (into [] (map #(function-evaluator % data counters nil) (first params-cond)))  ;evaluate parameter list
                 (inc
-                  (if (nil? (counters cname))
+                  (if (nil? (counters counter-name))
                     0                                                                                             ;initialize parameter counter.
-                    (get (counters cname) (into [] (map #(function-evaluator % data nil) (first params-cond))) 0) ;get old counter value
+                    (get (counters counter-name) (into [] (map #(function-evaluator % data counters nil) (first params-cond))) 0) ;get old counter value
                   )
                 )
               }
@@ -29,8 +29,11 @@
   )
 )
 
-(defn evaluate-signal [rule data]
-  ;TODO: evaluate signals
+(defn evaluate-signal [rule data counters]
+  ;(def rule-exp (:counter-signal rule))
+  ;(def cname (first rule-exp))
+  ;(def params-cond (rest rule-exp))
+
 )
 
 (defrecord State[rules counters history]
