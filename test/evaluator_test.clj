@@ -32,3 +32,9 @@
         (is (= 4 (function-evaluator '(/ (counter-value "spam-count" []) (counter-value "email-count" []))
          {"spam" true} {"spam-count" {[] 20}  "email-count" {[] 5}} nil)
             ))))
+
+(deftest zero-division-error-on-zero-division
+   (testing "Processing zero division throws exception."
+       (is (thrown? Exception (function-evaluator '(/ (counter-value "spam-count" []) (counter-value "email-count" []))
+        {"spam" true} {"spam-count" {[] 20}  "email-count" {[] 0}} nil)
+            ))))
