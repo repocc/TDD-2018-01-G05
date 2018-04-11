@@ -54,28 +54,28 @@
         (is (= 2
                (query-counter st3 "spam-count" [])))))))
 
-;(deftest contingency-table-counter-test
-  ;(let [st0 (initialize-processor rules)
-;        st1 (process-data-dropping-signals st0 {"spam" true, "important" true})
-;        st2 (process-data-dropping-signals st1 {"spam" true, "important" false})
-;        st3 (process-data-dropping-signals st2 {"spam" true, "important" false})
-;        st4 (process-data-dropping-signals st3 {"spam" false, "important" true})
-;        st5 (process-data-dropping-signals st4 {"spam" false, "important" true})
-;        st6 (process-data-dropping-signals st5 {"spam" false, "important" true})
-;        st7 (process-data-dropping-signals st6 {"spam" false, "important" false})
-;        st8 (process-data-dropping-signals st7 {"spam" false, "important" false})
-;        st9 (process-data-dropping-signals st8 {"spam" false, "important" false})
-;        end-state (process-data-dropping-signals st9 {"spam" false, "important" false})]
-;    (is (= 1
-;           (query-counter end-state "spam-important-table" [true true])))
-;    (is (= 2
-;           (query-counter end-state "spam-important-table" [true false])))
-;    (is (= 3
-;           (query-counter end-state "spam-important-table" [false true])))
-;    (is (= 4
-;           (query-counter end-state "spam-important-table" [false false])))))
-;
-;
+(deftest contingency-table-counter-test
+  (let [st0 (initialize-processor rules)
+        st1 (process-data-dropping-signals st0 {"spam" true, "important" true})
+        st2 (process-data-dropping-signals st1 {"spam" true, "important" false})
+        st3 (process-data-dropping-signals st2 {"spam" true, "important" false})
+        st4 (process-data-dropping-signals st3 {"spam" false, "important" true})
+        st5 (process-data-dropping-signals st4 {"spam" false, "important" true})
+        st6 (process-data-dropping-signals st5 {"spam" false, "important" true})
+        st7 (process-data-dropping-signals st6 {"spam" false, "important" false})
+        st8 (process-data-dropping-signals st7 {"spam" false, "important" false})
+        st9 (process-data-dropping-signals st8 {"spam" false, "important" false})
+        end-state (process-data-dropping-signals st9 {"spam" false, "important" false})]
+    (is (= 1
+           (query-counter end-state "spam-important-table" [true true])))
+    (is (= 2
+           (query-counter end-state "spam-important-table" [true false])))
+    (is (= 3
+           (query-counter end-state "spam-important-table" [false true])))
+    (is (= 4
+           (query-counter end-state "spam-important-table" [false false])))))
+
+
 ;(deftest signal-skip-on-error-test
 ;  (let [st0 (initialize-processor rules)
 ;        [st1 sg1] (process-data st0 {})]

@@ -11,15 +11,18 @@
   (def params-cond (rest rule-exp))
   (if (function-evaluator (rest params-cond) data nil)
        { cname
+         (merge
+              (if (nil? (counters cname)) {} (counters cname))
               {
                 (into [] (map #(function-evaluator % data nil) (first params-cond)))  ;evaluate parameter list
                 (inc
-                  (if (nil? (counters (str cname)))
+                  (if (nil? (counters cname))
                     0                                                                                             ;initialize parameter counter.
                     (get (counters cname) (into [] (map #(function-evaluator % data nil) (first params-cond))) 0) ;get old counter value
                   )
                 )
               }
+          )
         }
 
       counters
