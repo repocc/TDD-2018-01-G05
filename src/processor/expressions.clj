@@ -43,7 +43,8 @@
 (defn sub [x y data counters] (- x (function-evaluator y data counters sum)))
 (defn prod [x y data counters] (* x (function-evaluator y data counters prod)))
 (defn div [x y data counters]
-  (/ x (function-evaluator y data counters prod))
+    ;(println (str "divide with counters " counters))
+   (/ x (function-evaluator y data counters prod))
 )
 
 (def functions

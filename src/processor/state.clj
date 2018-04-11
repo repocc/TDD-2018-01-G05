@@ -12,7 +12,7 @@
   (if (function-evaluator (rest params-cond) data counters nil)
        { counter-name
          (merge
-              (if (nil? (counters counter-name)) {} (counters counter-name))
+              (if (contains? counters counter-name) (counters counter-name) {})
               {
                 (into [] (map #(function-evaluator % data counters nil) (first params-cond)))  ;evaluate parameter list
                 (inc
@@ -25,7 +25,7 @@
           )
         }
 
-      counters
+      { counter-name (if (contains? counters counter-name) (counters counter-name) {})}
   )
 )
 

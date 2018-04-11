@@ -88,16 +88,15 @@
         [st3 sg3] (process-data st2 {})]
     (is (= 0
            (count sg1)))
-           ))
-;    (is (= 1
-;           (count sg2)))
-;    (is (= 1
-;           (get (first sg2) "spam-fraction")))
-;    (is (= 1
-;           (count sg3)))
-;    (is (< 0.49
-;           (get (first sg3) "spam-fraction")
-;           0.51))))
+    (is (= 1
+           (count sg2)))
+    (is (= 1
+           (get (first sg2) "spam-fraction")))
+    (is (= 1
+           (count sg3)))
+    (is (< 0.49
+           (get (first sg3) "spam-fraction")
+           0.51))))
 
 ;(deftest past-value-test
 ;  (let [st0 (initialize-processor '((define-signal {"repeated" (current "value")}
