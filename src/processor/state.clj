@@ -8,7 +8,7 @@
 (defn evaluate-counter [rule data counters]
   (def rule-exp (:counter-rule rule))
   (def counter-name (first rule-exp))
-  (def params-cond (rest rule-exp))
+  (def params-cond (rest  rule-exp))
   (if (function-evaluator (rest params-cond) data counters nil)
        { counter-name
          (merge
@@ -30,20 +30,31 @@
 )
 
 (defn evaluate-signal [rule data counters]
-  ;(def rule-exp (:counter-signal rule))
-  ;(def cname (first rule-exp))
-  ;(def params-cond (rest rule-exp))
+  (def rule-exp (:signal-rule rule))
+  (def rule-data (first rule-exp))
+  (def condition (rest rule-exp))
+  ;(println (str "processing singal... " data " with counters " counters))
+  (if (function-evaluator condition data counters nil)
+      (try
+        (reduce-kv (fn [map sname srule] (assoc map sname (function-evaluator srule data counters nil))) {} rule-data)
+        (catch Exception e '())
+      )
+      '()
+  )
 
 )
 
 (defrecord State[rules counters history]
   Evaluable
   (evaluate [this data]
+    [
     (new State
      (:rules this)
-     (into {} (map (fn [rule] (evaluate-counter rule data (:counters this))) (filter #(contains? % :counter-rule) (:rules this) ) ))
+     (into {} (map (fn [rule] (evaluate-counter rule data (:counters this))) (:counter-rules (:rules this) ) ))
      (:history this)
     )
+    (filter #(not (empty? %)) (map (fn [rule] (evaluate-signal rule data (:counters this))) (:signal-rules (:rules this) ) ))
+    ]
   )
   Countable
   (count [this counter-name counter-args]
@@ -66,5 +77,7 @@
 )
 
 (defn get-init-state [rules]
-  (new State (map #(rule-matcher (first %)  %) rules) {} {})
+  (def rule-list (map #(rule-matcher (first %)  %) rules))
+  (def processed-rules {:counter-rules (filter #(contains? % :counter-rule) rule-list) :signal-rules (filter #(contains? % :signal-rule) rule-list)})
+  (new State processed-rules {} {})
 )

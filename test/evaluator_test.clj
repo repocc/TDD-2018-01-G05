@@ -26,3 +26,9 @@
     (testing "Evaluator division operation with multiple divisors test."
         (is (= 10 (function-evaluator '(/ 100 5 2) {"spam" true} {} nil)
             ))))
+
+(deftest evaluate-division-with-counters
+    (testing "Evaluator division operation with counter values test."
+        (is (= 4 (function-evaluator '(/ (counter-value "spam-count" []) (counter-value "email-count" []))
+         {"spam" true} {"spam-count" {[] 20}  "email-count" {[] 5}} nil)
+            ))))

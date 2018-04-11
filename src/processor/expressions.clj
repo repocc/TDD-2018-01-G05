@@ -31,17 +31,20 @@
 )
 
 (defmethod function-evaluator :default [exp data counters f]
+    ;(println (str "hellooooou " exp))
     (if (empty? (rest exp))
       (function-evaluator (first exp) data counters f)
       (f (function-evaluator (first exp) data counters nil)
-         (rest exp) data)
+         (rest exp) data counters)
     )
 )
 
 (defn sum [x y data counters] (+ x (function-evaluator y data counters sum)))
 (defn sub [x y data counters] (- x (function-evaluator y data counters sum)))
 (defn prod [x y data counters] (* x (function-evaluator y data counters prod)))
-(defn div [x y data counters] (/ x (function-evaluator y data counters prod)))
+(defn div [x y data counters]
+  (/ x (function-evaluator y data counters prod))
+)
 
 (def functions
   {
@@ -55,15 +58,17 @@
      )
    (symbol 'current)
      (fn [exp data counters]
-  ;      (println (str "current" " " data (rest exp) (data (first (rest exp))) ))
         (data (first (rest exp)))
      )
    (symbol 'counter-value)
      (fn [exp data counters]
-        ;(println (str "counter-value " " " counters (rest exp) (first (rest exp)) (rest (rest exp)) ))
+        ;(println (str "Looking for counter-value " (first (rest exp)) " " (last (rest exp)) " in " counters ))
         (def cname (first (rest exp)))
         (def params (last (rest exp)))
-        ((counters cname) params)
+        (if  (not (contains? counters cname) )
+          (throw (Exception. "Counter not found!"))
+          ((counters cname) params)
+        )
      )
    (symbol '/)
     (fn [exp data counters]
@@ -71,8 +76,3 @@
     )
   }
 )
-
-;CASOS TESTEADOS:
-;(function-evaluator '(- 10 1) {} nil)
-;(function-evaluator '(+ 10 1 (- 4 3)) {} nil)
-;(function-evaluator '(- 10 1 (+ 1 1) (+ 1 1)) {} nil)

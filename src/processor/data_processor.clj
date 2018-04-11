@@ -10,7 +10,7 @@
 )
 
 (defn process-data [state new-data]
-  [(protocols.protocols/evaluate state new-data) []]
+  (protocols.protocols/evaluate state new-data)
 )
 
 (defn query-counter [state counter-name counter-args]
