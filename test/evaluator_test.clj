@@ -50,7 +50,6 @@
        (is (= true (function-evaluator '(< 1 2) {} {} {} nil)
             ))))
 
-
 (deftest less-than-returns-true-with-monotonical-sequence
    (testing "Less than returns true with monotonically increasing sequence."
        (is (= true (function-evaluator '(< 1 2 3 4 5) {} {} {} nil)
@@ -61,6 +60,21 @@
        (is (= false (function-evaluator '(< 1 2 7 4 5) {} {} {} nil)
             ))))
 
+(deftest less-than-equal-returns-true-with-ordered-literals
+   (testing "Less than equal returns true when first literal is smaller than or equal to second."
+       (is (= true (function-evaluator '(<= 1 2) {} {} {} nil)
+            ))))
+
+(deftest less-than-equal-returns-true-with-monotonical-sequence
+   (testing "Less than equal returns true with monotonically increasing sequence."
+       (is (= true (function-evaluator '(<= 1 2 2 4 5 5) {} {} {} nil)
+            ))))
+
+(deftest less-than-equal-returns-false-with-non-monotonical-sequence
+   (testing "Less than equal returns false with non increasing sequence."
+       (is (= false (function-evaluator '(<= 1 2 7 4 5) {} {} {} nil)
+            ))))
+
 (deftest greater-than-returns-true-with-monotonical-sequence
    (testing "Greater than returns true with monotonically decreasing sequence."
        (is (= true (function-evaluator '(> 6 4 2 1) {} {} {} nil)
@@ -69,6 +83,16 @@
 (deftest greater-than-returns-false-with-non-monotonical-sequence
    (testing "Greater than returns false with non decreasing sequence."
        (is (= false (function-evaluator '(> 8 4 9 2) {} {} {} nil)
+            ))))
+
+(deftest greater-than-equal-returns-true-with-monotonical-sequence
+   (testing "Greater than equal returns true with monotonically decreasing sequence."
+       (is (= true (function-evaluator '(>= 6 4 1 1 0) {} {} {} nil)
+            ))))
+
+(deftest greater-than-equal-returns-false-with-non-monotonical-sequence
+   (testing "Greater than equal returns false with non decreasing sequence."
+       (is (= false (function-evaluator '(>= 8 4 9 2) {} {} {} nil)
             ))))
 
 ;Equality operators tests:
@@ -113,3 +137,28 @@
    (testing "Concat returns the string associated to an expression."
      (is (= "false" (function-evaluator '(concat (and true true true false)) {} {} {} nil) ))
         ))
+
+(deftest include-returns-true-if-substr-present
+   (testing "include? returns true if string contains substring"
+     (is (= true (function-evaluator '(includes? "hello" "el") {} {} {} nil) ))
+        ))
+
+(deftest include-returns-false-if-substr-present
+   (testing "include? returns true if string contains substring"
+     (is (= false (function-evaluator '(includes? "hello" "pe") {} {} {} nil) ))
+          ))
+
+(deftest starts-with-true-if-begins-with-substr
+   (testing "starts-with? returns true if string begins with substring"
+       (is (= true (function-evaluator '(starts-with? "hello" "he") {} {} {} nil) ))
+          ))
+
+(deftest starts-with-false-if-not-begins-with-substr
+   (testing "starts-with? returns false if string does not begin with substring"
+       (is (= false (function-evaluator '(starts-with? "hello" "wo") {} {} {} nil) ))
+          ))
+
+(deftest ends-with-true-if-ends-with-substr
+   (testing "ends-with? returns true if string ends with substring"
+       (is (= true (function-evaluator '(ends-with? "hello" "llo") {} {} {} nil) ))
+            ))
