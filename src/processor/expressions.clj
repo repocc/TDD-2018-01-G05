@@ -1,7 +1,6 @@
 (ns processor.expressions)
 (require '[clojure.string :as str])
 
-
 (declare functions)
 (declare function-evaluator)
 
@@ -92,6 +91,7 @@
     (not= x (function-evaluator y data counters history nil))
    )
 )
+
 
 (def functions
   {

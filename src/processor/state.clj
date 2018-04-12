@@ -4,7 +4,12 @@
   (:import [protocols.protocols Countable])
   (:import [protocols.protocols Evaluable])
 )
+
 (require '[clojure.string :as str])
+
+; Evaluations
+
+;   Counter
 
 (defn evaluate-counter [rule data counters history]
   (def rule-exp (:counter-rule rule))
@@ -30,6 +35,8 @@
   )
 )
 
+;   Signal
+
 (defn evaluate-signal [rule data counters history]
   (def rule-exp (:signal-rule rule))
   (def rule-data (first rule-exp))
@@ -46,6 +53,8 @@
   )
 )
 
+; History Update
+
 (defn update-history [history data]
     (reduce-kv (fn [map key value]
         (if (contains? history key)
@@ -57,6 +66,8 @@
       data
     )
 )
+
+; Definition of State Class
 
 (defrecord State[rules counters history]
   Evaluable
@@ -79,6 +90,8 @@
   )
 )
 
+; Rule matcher
+
 (defmulti rule-matcher (fn [rule_type rule] (symbol rule_type)))
 
 (defmethod rule-matcher 'define-counter [rule_type rule]
@@ -88,6 +101,8 @@
 (defmethod rule-matcher 'define-signal [rule_type rule]
   {:signal-rule (rest rule)}
 )
+
+; State initialization
 
 (defn init-history [rules]
   (def past-keys (distinct (flatten (map #(re-seq #"(?<=\(past)(.*?)(?=\))" (str %) ) rules) ))) ;get all (past "*") matching values.
