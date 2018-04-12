@@ -29,3 +29,17 @@
     (is (= 1 (query-counter st1 "spam-count" [])))
     (is (= 2 (query-counter st2 "email-count" [])))
     (is (= 1 (query-counter st2 "spam-count" [])))))
+
+(deftest past-value-updated
+  (let [st0 (initialize-processor '((define-signal {"repeated" (past "value")}
+                                      true)))
+        [st1 sg1] (process-data st0 {"value" 1})
+        [st2 sg2] (process-data st1 {"value" 2})
+        [st3 sg3] (process-data st2 {"value" 1})
+        [st4 sg4] (process-data st3 {"value" 1})
+        [st5 sg5] (process-data st4 {"value" 2})]
+    (is (= '() sg1))
+    (is (= '({"repeated" [1]}) sg2))
+    (is (= '({"repeated" [1 2]}) sg3))
+    (is (= '({"repeated" [1 2 1]}) sg4))
+    (is (= '({"repeated" [1 2 1 1]}) sg5))))
