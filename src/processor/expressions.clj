@@ -4,6 +4,7 @@
 (declare functions)
 (declare function-evaluator)
 
+
 (defn eval-lit [lit restofexp data counters f]
   (if (empty? restofexp)
       lit
@@ -31,7 +32,6 @@
 )
 
 (defmethod function-evaluator :default [exp data counters f]
-    ;(println (str "hellooooou " exp))
     (if (empty? (rest exp))
       (function-evaluator (first exp) data counters f)
       (f (function-evaluator (first exp) data counters nil)

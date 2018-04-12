@@ -5,6 +5,8 @@
   (:import [protocols.protocols Evaluable])
 )
 
+; 
+
 (defn evaluate-counter [rule data counters]
   (def rule-exp (:counter-rule rule))
   (def counter-name (first rule-exp))
