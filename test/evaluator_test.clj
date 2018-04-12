@@ -39,13 +39,39 @@
         {"spam" true} {"spam-count" {[] 20}  "email-count" {[] 0}} {} nil)
             ))))
 
+;Equality operators tests:
 (deftest equal-applied-to-literals
   (testing "Equal returns true if equal literals compared."
        (is (= true (function-evaluator '(= 1 1) {} {} {} nil) ))
            ))
 
-
 (deftest equal-applied-to-seq-true-if-contained
    (testing "Equal returns true if value contained in sequence."
      (is (= true (function-evaluator '(= 1 (past "value")) {} {} {"value" [2 3 1 4]} nil) ))
          ))
+
+(deftest not-equal-applied-to-different-vals-is-true
+   (testing "Not equal returns true if non-equal values are compared."
+     (is (= true (function-evaluator '(!= 1 2) {} {} {} nil) ))
+        ))
+
+;Boolean operators tests:
+(deftest or-applied-to-multiple-vals-ors-all
+   (testing "Or applied to sequence of booleans returns equivalent of applying or to all of them."
+     (is (= true (function-evaluator '(or false false false true) {} {} {} nil) ))
+        ))
+
+(deftest and-applied-to-multiple-vals-ors-all
+   (testing "And applied to sequence of booleans returns equivalent of applying and to all of them."
+     (is (= false (function-evaluator '(and true true true false) {} {} {} nil) ))
+        ))
+
+(deftest not-applied-to-boolean-returns-opposite
+   (testing "Not negates boolean evaluation."
+     (is (= true (function-evaluator '(not (and true true true false)) {} {} {} nil) ))
+        ))
+
+(deftest not-applied-to-boolean-returns-opposite
+   (testing "Not negates boolean evaluation."
+     (is (= true (function-evaluator '(not (and true true true false)) {} {} {} nil) ))
+        ))
