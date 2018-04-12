@@ -98,21 +98,22 @@
            (get (first sg3) "spam-fraction")
            0.51))))
 
-;(deftest past-value-test
-;  (let [st0 (initialize-processor '((define-signal {"repeated" (current "value")}
-;                                      (= (current "value") (past "value")))))
-;        [st1 sg1] (process-data st0 {"value" 1})
-;        [st2 sg2] (process-data st1 {"value" 2})
-;        [st3 sg3] (process-data st2 {"value" 1})
-;        [st4 sg4] (process-data st3 {"value" 1})
-;        [st5 sg5] (process-data st4 {"value" 2})]
-;    (is (= 0
-;           (count sg1)))
-;    (is (= 0
-;           (count sg2)))
-;    (is (= '({"repeated" 1})
-;           sg3))
-;    (is (= '({"repeated" 1})
-;           sg4))
-;    (is (= '({"repeated" 2})
-;           sg5))))
+(deftest past-value-test
+  (let [st0 (initialize-processor '((define-signal {"repeated" (current "value")}
+                                      (= (current "value") (past "value")))))
+        [st1 sg1] (process-data st0 {"value" 1})
+        [st2 sg2] (process-data st1 {"value" 2})
+        [st3 sg3] (process-data st2 {"value" 1})
+        [st4 sg4] (process-data st3 {"value" 1})
+        [st5 sg5] (process-data st4 {"value" 2})]
+    (is (= 0
+           (count sg1)))
+    (is (= 0
+           (count sg2)))
+    (is (= '({"repeated" 1})
+           sg3))
+    (is (= '({"repeated" 1})
+           sg4))
+    (is (= '({"repeated" 2})
+           sg5))
+))

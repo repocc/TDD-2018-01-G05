@@ -43,6 +43,12 @@
 (defn sub [x y data counters history] (- x (function-evaluator y data counters history sum)))
 (defn prod [x y data counters history] (* x (function-evaluator y data counters history prod)))
 (defn div [x y data counters history] (/ x (function-evaluator y data counters history prod)))
+(defn equal [x y data counters history]
+   (if (vector? (function-evaluator y data counters history nil))
+    (some #(= x %) (function-evaluator y data counters history nil))
+    (= x (function-evaluator y data counters history nil))
+   )
+)
 
 (def functions
   {
@@ -73,7 +79,7 @@
     )
    (symbol '=)
     (fn [exp data counters history]
-      ;(function-evaluator (rest exp) data counters history equal)
+      (function-evaluator (rest exp) data counters history equal)
     )
    (symbol 'past)
     (fn [exp data counters history]
@@ -82,6 +88,7 @@
         (throw (Exception. "Referenced past value not found!"))
         (history data-name)
       )
+      ;(println (str "Evaluated past " (history data-name)))
     )
   }
 )

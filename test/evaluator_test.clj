@@ -38,3 +38,14 @@
        (is (thrown? Exception (function-evaluator '(/ (counter-value "spam-count" []) (counter-value "email-count" []))
         {"spam" true} {"spam-count" {[] 20}  "email-count" {[] 0}} {} nil)
             ))))
+
+(deftest equal-applied-to-literals
+  (testing "Equal returns true if equal literals compared."
+       (is (= true (function-evaluator '(= 1 1) {} {} {} nil) ))
+           ))
+
+
+(deftest equal-applied-to-seq-true-if-contained
+   (testing "Equal returns true if value contained in sequence."
+     (is (= true (function-evaluator '(= 1 (past "value")) {} {} {"value" [2 3 1 4]} nil) ))
+         ))

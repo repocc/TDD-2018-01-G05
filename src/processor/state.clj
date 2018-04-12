@@ -34,17 +34,19 @@
   (def rule-exp (:signal-rule rule))
   (def rule-data (first rule-exp))
   (def condition (rest rule-exp))
-  (if (function-evaluator condition data counters history nil)
-      (try
-        (reduce-kv (fn [map sname srule] (assoc map sname (function-evaluator srule data counters history nil))) {} rule-data)
-        (catch Exception e '())
-      )
-      '()
+  (try
+    (if (function-evaluator condition data counters history nil)
+        (try
+          (reduce-kv (fn [map sname srule] (assoc map sname (function-evaluator srule data counters history nil))) {} rule-data)
+          (catch Exception e '())
+        )
+        '()
+    )
+    (catch Exception e '())
   )
 )
 
 (defn update-history [history data]
-  ;(def res
     (reduce-kv (fn [map key value]
         (if (contains? history key)
           (assoc map key (conj (history key) value))
@@ -54,9 +56,6 @@
       history
       data
     )
-  ;)
-  ;(println (str "History " history " updated " res " " data))
-  ;res
 )
 
 (defrecord State[rules counters history]
