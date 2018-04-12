@@ -67,18 +67,34 @@
 (defn my-or [x y data counters history]  (or x (function-evaluator y data counters history my-or)))
 (defn my-and [x y data counters history]  (and x (function-evaluator y data counters history my-and)))
 (defn my-mod [x y data counters history]  (mod x (function-evaluator y data counters history nil)))
+(defn includes [x y data counters history]  (str/includes? x (function-evaluator y data counters history nil)))
+(defn starts-with [x y data counters history]  (str/starts-with? x (function-evaluator y data counters history nil)))
+(defn ends-with [x y data counters history]  (str/ends-with? x (function-evaluator y data counters history nil)))
 (defn cmp-lt [x y data counters history]
     (if (= (count y) 1)
       (< x (first y))
       (and (function-evaluator y data counters history cmp-lt) (< x (first y)))
     )
   )
+(defn cmp-lte [x y data counters history]
+    (if (= (count y) 1)
+      (<= x (first y))
+      (and (function-evaluator y data counters history cmp-lte) (<= x (first y)))
+    )
+)
 (defn cmp-gt [x y data counters history]
     (if (= (count y) 1)
       (> x (first y))
       (and (function-evaluator y data counters history cmp-gt) (> x (first y)))
     )
   )
+(defn cmp-gte [x y data counters history]
+    (if (= (count y) 1)
+      (>= x (first y))
+      (and (function-evaluator y data counters history cmp-gte) (>= x (first y)))
+    )
+)
+
 (defn equal [x y data counters history]
    (if (vector? (function-evaluator y data counters history nil))
     (some #(= x %) (function-evaluator y data counters history nil))
@@ -115,9 +131,17 @@
      (fn [exp data counters history]
          (function-evaluator (rest exp) data counters history cmp-lt)
      )
+   (symbol '<=)
+     (fn [exp data counters history]
+         (function-evaluator (rest exp) data counters history cmp-lte)
+     )
    (symbol '>)
      (fn [exp data counters history]
          (function-evaluator (rest exp) data counters history cmp-gt)
+     )
+   (symbol '>=)
+     (fn [exp data counters history]
+         (function-evaluator (rest exp) data counters history cmp-gte)
      )
    (symbol '=)
     (fn [exp data counters history]
@@ -164,5 +188,17 @@
       (fn [exp data counters history]
           (str (function-evaluator (rest exp) data counters history nil))
       )
+  (symbol 'includes?)
+     (fn [exp data counters history]
+          (function-evaluator (rest exp) data counters history includes)
+     )
+ (symbol 'starts-with?)
+     (fn [exp data counters history]
+         (function-evaluator (rest exp) data counters history starts-with)
+      )
+ (symbol 'ends-with?)
+    (fn [exp data counters history]
+         (function-evaluator (rest exp) data counters history ends-with)
+     )
   }
 )
