@@ -8,18 +8,20 @@
 
 (defn evaluate-counter [rule data counters history]
   (def rule-exp (:counter-rule rule))
-  (def counter-name (first rule-exp))
-  (def params-cond (rest  rule-exp))
-  (if (function-evaluator (rest params-cond) data counters history nil)
+  (def counter-name (:name rule))
+  ;(def params-cond (rest rule-exp))
+  (def step (if (= 1 (:step rule)) (:step rule) (function-evaluator (:step rule) data counters history nil)))
+  ;(println (str "NAME " counter-name " STEP" step " CONDICION " (second rule-exp) " PARAMS " (first rule-exp)))
+  (if (function-evaluator (rest rule-exp)  data counters history nil)
        { counter-name
          (merge
               (if (contains? counters counter-name) (counters counter-name) {})
               {
-                (into [] (map #(function-evaluator % data counters history nil) (first params-cond)))  ;evaluate parameter list
-                (inc
+                (into [] (map #(function-evaluator % data counters history nil) (first rule-exp)))  ;evaluate parameter list
+                (+ step
                   (if (nil? (counters counter-name))
                     0                                                                                             ;initialize parameter counter.
-                    (get (counters counter-name) (into [] (map #(function-evaluator % data counters history nil) (first params-cond))) 0) ;get old counter value
+                    (get (counters counter-name) (into [] (map #(function-evaluator % data counters history nil) (first rule-exp))) 0) ;get old counter value
                   )
                 )
               }
@@ -82,7 +84,12 @@
 (defmulti rule-matcher (fn [rule_type rule] (symbol rule_type)))
 
 (defmethod rule-matcher 'define-counter [rule_type rule]
-  {:counter-rule (rest rule)}
+  {:counter-rule (rest (rest rule)) :name (first (rest rule)) :step 1}
+)
+
+
+(defmethod rule-matcher 'define-step-counter [rule_type rule]
+  {:counter-rule (rest (rest (rest rule))) :name (first (rest rule)) :step (first (rest (rest rule))) }
 )
 
 (defmethod rule-matcher 'define-signal [rule_type rule]
