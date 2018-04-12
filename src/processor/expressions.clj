@@ -1,6 +1,7 @@
 (ns processor.expressions)
 (require '[clojure.string :as str])
 
+
 (declare functions)
 (declare function-evaluator)
 
@@ -14,22 +15,43 @@
 (defmulti function-evaluator (fn [exp data counters history f]
                                  (type (first exp))))
 
+; Recursively evaluates an expression given a String
 (defmethod function-evaluator java.lang.String [exp data counters history f]
     (eval-lit (first exp) (rest exp) data counters history f)
 )
 
+; Recursively evaluates an expression given a Number
 (defmethod function-evaluator java.lang.Number [exp data counters history f]
     (eval-lit (first exp) (rest exp) data counters history f)
 )
 
+; Recursively evaluates an expression given a Boolean
 (defmethod function-evaluator java.lang.Boolean [exp data counters history f]
     (eval-lit (first exp) (rest exp) data counters history f)
 )
 
+
+; Recursively evaluates an expression given a Symbol,
+; Possible symbols
+; +
+; -
+; /
+; <
+; >
+; =
+; !=
+; or
+; not
+; and
+; current
+; counter-value
+; past
+; concat
 (defmethod function-evaluator clojure.lang.Symbol [exp data counters history f]
     ((functions (first exp)) exp data counters history)
 )
 
+; Recursively evaluates an expression given default
 (defmethod function-evaluator :default [exp data counters history f]
     (if (empty? (rest exp))
       (function-evaluator (first exp) data counters history f)
@@ -38,6 +60,7 @@
     )
 )
 
+; Define native operations and wrapps theme to clojure operations
 (defn sum [x y data counters history] (+ x (function-evaluator y data counters history sum)))
 (defn sub [x y data counters history] (- x (function-evaluator y data counters history sum)))
 (defn prod [x y data counters history] (* x (function-evaluator y data counters history prod)))
