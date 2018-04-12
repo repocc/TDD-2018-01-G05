@@ -44,7 +44,19 @@
 (defn div [x y data counters history] (/ x (function-evaluator y data counters history prod)))
 (defn my-or [x y data counters history]  (or x (function-evaluator y data counters history my-or)))
 (defn my-and [x y data counters history]  (and x (function-evaluator y data counters history my-and)))
-
+(defn my-mod [x y data counters history]  (mod x (function-evaluator y data counters history nil)))
+(defn cmp-lt [x y data counters history]
+    (if (= (count y) 1)
+      (< x (first y))
+      (and (function-evaluator y data counters history cmp-lt) (< x (first y)))
+    )
+  )
+(defn cmp-gt [x y data counters history]
+    (if (= (count y) 1)
+      (> x (first y))
+      (and (function-evaluator y data counters history cmp-gt) (> x (first y)))
+    )
+  )
 (defn equal [x y data counters history]
    (if (vector? (function-evaluator y data counters history nil))
     (some #(= x %) (function-evaluator y data counters history nil))
@@ -72,6 +84,18 @@
     (fn [exp data counters history]
         (function-evaluator (rest exp) data counters history div)
     )
+   (symbol 'mod)
+    (fn [exp data counters history]
+        (function-evaluator (rest exp) data counters history my-mod)
+    )
+   (symbol '<)
+     (fn [exp data counters history]
+         (function-evaluator (rest exp) data counters history cmp-lt)
+     )
+   (symbol '>)
+     (fn [exp data counters history]
+         (function-evaluator (rest exp) data counters history cmp-gt)
+     )
    (symbol '=)
     (fn [exp data counters history]
         (function-evaluator (rest exp) data counters history equal)
@@ -88,12 +112,10 @@
      (fn [exp data counters history]
         (not (function-evaluator (rest exp) data counters history nil))
      )
-
    (symbol 'and)
      (fn [exp data counters history]
          (function-evaluator (rest exp) data counters history my-and)
      )
-
    (symbol 'current)
      (fn [exp data counters history]
         (data (first (rest exp)))
@@ -115,5 +137,10 @@
         (history data-name)
       )
     )
+  (symbol 'concat)
+      (fn [exp data counters history]
+          (str (function-evaluator (rest exp) data counters history nil))
+      )
+
   }
 )

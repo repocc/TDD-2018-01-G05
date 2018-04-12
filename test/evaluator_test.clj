@@ -17,6 +17,7 @@
         (is (= 1 (function-evaluator '(counter-value "email-count" []) {"spam" true} {"email-count" {[] 1}} {} nil)
               ))))
 
+;Number operators tests:
 (deftest evaluate-simple-division
     (testing "Evaluator division operation with only one divisor test."
         (is (= 20 (function-evaluator '(/ 100 5) {"spam" true} {} {} nil)
@@ -37,6 +38,37 @@
    (testing "Processing zero division throws exception."
        (is (thrown? Exception (function-evaluator '(/ (counter-value "spam-count" []) (counter-value "email-count" []))
         {"spam" true} {"spam-count" {[] 20}  "email-count" {[] 0}} {} nil)
+            ))))
+
+(deftest mod-returns-division-modulus
+   (testing "Mod returns division modulus."
+       (is (= 0.5 (function-evaluator '(mod 1.5 1) {} {} {} nil)
+            ))))
+
+(deftest less-than-returns-true-with-ordered-literals
+   (testing "Less than returns true when first literal is smaller than second."
+       (is (= true (function-evaluator '(< 1 2) {} {} {} nil)
+            ))))
+
+
+(deftest less-than-returns-true-with-monotonical-sequence
+   (testing "Less than returns true with monotonically increasing sequence."
+       (is (= true (function-evaluator '(< 1 2 3 4 5) {} {} {} nil)
+            ))))
+
+(deftest less-than-returns-false-with-non-monotonical-sequence
+   (testing "Less than returns false with non increasing sequence."
+       (is (= false (function-evaluator '(< 1 2 7 4 5) {} {} {} nil)
+            ))))
+
+(deftest greater-than-returns-true-with-monotonical-sequence
+   (testing "Greater than returns true with monotonically decreasing sequence."
+       (is (= true (function-evaluator '(> 6 4 2 1) {} {} {} nil)
+            ))))
+
+(deftest greater-than-returns-false-with-non-monotonical-sequence
+   (testing "Greater than returns false with non decreasing sequence."
+       (is (= false (function-evaluator '(> 8 4 9 2) {} {} {} nil)
             ))))
 
 ;Equality operators tests:
@@ -74,4 +106,10 @@
 (deftest not-applied-to-boolean-returns-opposite
    (testing "Not negates boolean evaluation."
      (is (= true (function-evaluator '(not (and true true true false)) {} {} {} nil) ))
+        ))
+
+;String operator tests
+(deftest concat-returns-expression-str
+   (testing "Concat returns the string associated to an expression."
+     (is (= "false" (function-evaluator '(concat (and true true true false)) {} {} {} nil) ))
         ))
